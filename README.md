@@ -23,7 +23,7 @@ If you find this code useful for your research, please use the following BibTeX 
 @article{pi2025coda,
   title={CoDA: Coordinated Diffusion Noise Optimization for Whole-Body Manipulation of Articulated Objects},
   author={Pi, Huaijin and Cen, Zhi and Dou, Zhiyang and Komura, Taku},
-  journal={arXiv preprint arXiv:25},
+  journal={arXiv preprint arXiv:2505.21437},
   year={2025}
 }
 ```
