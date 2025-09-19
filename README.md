@@ -6,7 +6,7 @@
 [Zhi Cen](https://anitacen.github.io/),
 [Zhiyang Dou](https://frank-zy-dou.github.io/),
 [Taku Komura](https://i.cs.hku.hk/~taku) \
-> Arxiv 2025
+> NeurIPS 2025
 
 <p align="center">
     <img src=docs/image/teaser_v2.png />
@@ -23,7 +23,7 @@ If you find this code useful for your research, please use the following BibTeX 
 @article{pi2025coda,
   title={CoDA: Coordinated Diffusion Noise Optimization for Whole-Body Manipulation of Articulated Objects},
   author={Pi, Huaijin and Cen, Zhi and Dou, Zhiyang and Komura, Taku},
-  journal={arXiv preprint arXiv:2505.21437},
+  journal={Advances in Neural Information Processing Systems},
   year={2025}
 }
 ```
