@@ -1,0 +1,89 @@
+# @package _global_
+defaults:
+    - override /data: mocap/trainX_testY
+    - override /model: diffusion/diffusion_pl
+    - override /endecoder: diffusion/v1_bps_tip
+    - override /optimizer: adamw_1e-4
+    - override /train_datasets:
+          - arctic/objtraj
+    - override /test_datasets:
+          - arctic/objtraj_test
+    - override /callbacks:
+          - simple_ckpt_saver/every50e_top100
+          - prog_bar/prog_reporter_every0.1
+          - train_speed_timer/base
+          - lr_monitor/pl
+    - override /network: diffusion/bpstraj_transformer
+
+# 100 epoch results is every jitter, at least 200 epoch
+exp_name_base: diffusion
+exp_name_var: "objtraj"
+exp_name: ${exp_name_base}${exp_name_var}
+data_name: arctic
+
+pipeline:
+    _target_: coda.model.diff.pipeline.text_pipeline.Pipeline
+    args_denoiser3d:
+        _target_: coda.network.transformer.transformer.NetworkEncoder
+        max_len: 300
+        output_dim: 11
+        obj_dim: 1
+        bps_dim: 512
+        objtraj_dim: 0
+        clip_dim: 512
+        num_layers: 6
+        is_dit: True
+        first_x_dim: 11
+    args:
+        endecoder_opt:
+            _target_: coda.model.diff.utils.endecoder.ARCTICTrajEnDecoder
+            stats_name: OBJTRAJ_ARCTIC_RELY_RELROT_CONTACT
+            is_in_world: False
+            is_rely: True
+            is_relative_rot: True
+
+        guidance_scale: 1.0
+        num_inference_steps: 100
+        scheduler_opt_train: # Always DDPM
+            beta_schedule: squaredcos_cap_v2 # cosine instead of linear
+            prediction_type: sample
+            clip_sample: False
+            timestep_spacing: "linspace"
+            num_train_timesteps: 1000
+        # scheduler_opt_sample:
+        #     _target_: diffusers.schedulers.DDPMScheduler # potentially DDIM
+        #     beta_schedule: squaredcos_cap_v2 # cosine instead of linear
+        #     prediction_type: sample
+        #     clip_sample: False
+        #     timestep_spacing: "linspace"
+        #     num_train_timesteps: 1000
+        scheduler_opt_sample:
+            _target_: diffusers.schedulers.DDIMScheduler 
+            beta_schedule: squaredcos_cap_v2 # cosine instead of linear
+            prediction_type: sample
+            clip_sample: False
+            timestep_spacing: "linspace"
+            num_train_timesteps: 1000
+    args_clip:
+        _target_: coda.network.clip.clip_text_vision_base_patch32.CLIPLatentEncoder
+
+
+data:
+    loader_opts:
+        train:
+            batch_size: 32
+            num_workers: 2
+
+pl_trainer:
+    precision: 32
+    log_every_n_steps: 50
+    gradient_clip_val: 0.5
+    max_epochs: 500
+    check_val_every_n_epoch: 50
+    devices: 1
+
+logger:
+    _target_: pytorch_lightning.loggers.WandbLogger
+    save_dir: ${output_dir} # /save_dir/name/version/sub_dir
+    name: ${exp_name_base}${exp_name_var}
+    project: diffusion_objtraj

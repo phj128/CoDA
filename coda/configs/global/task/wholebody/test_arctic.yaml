@@ -1,0 +1,29 @@
+# @package _global_
+defaults:
+  - override /data: mocap/testY
+  - override /test_datasets:
+      - arctic/wholebody_test
+  - override /callbacks:
+      - metric_wholebodyobjpose
+  - _self_
+
+task: test
+data_name: test_arctic
+ckpt_path:
+  body: inputs/release_checkpoints/body.ckpt
+  lefthand: inputs/release_checkpoints/lefthand.ckpt
+  righthand: inputs/release_checkpoints/righthand.ckpt
+  invtraj: inputs/release_checkpoints/ee.ckpt
+  obj: inputs/release_checkpoints/obj.ckpt
+
+seed: 43
+
+# lightning utilities
+pl_trainer:
+  devices: 1
+logger: null
+
+callbacks:
+  vis_wholebodypose:
+    _target_: coda.model.diff.callbacks.vis.VisWholeBodyPose
+    prefix: ours

@@ -1,0 +1,68 @@
+{
+    "box": [
+        "s02_box_grab_01.pt",
+        "s08_box_use_04.pt",
+        "s01_box_use_01.pt",
+        "s04_box_use_01.pt"
+    ],
+    "capsulemachine": [
+        "s02_capsulemachine_grab_01.pt",
+        "s04_capsulemachine_use_01.pt",
+        "s09_capsulemachine_use_03.pt",
+        "s06_capsulemachine_use_02.pt"
+    ],
+    "espressomachine": [
+        "s05_espressomachine_grab_01.pt",
+        "s10_espressomachine_use_02.pt",
+        "s02_espressomachine_use_01.pt",
+        "s06_espressomachine_use_02.pt"
+    ],
+    "ketchup": [
+        "s06_ketchup_grab_01_retake2.pt",
+        "s02_ketchup_use_03.pt",
+        "s10_ketchup_use_01.pt",
+        "s04_ketchup_use_02.pt"
+    ],
+    "laptop": [
+        "s05_laptop_grab_01.pt",
+        "s06_laptop_use_02_retake.pt",
+        "s04_laptop_use_02.pt",
+        "s07_laptop_use_01.pt"
+    ],
+    "microwave": [
+        "s04_microwave_grab_01.pt",
+        "s09_microwave_use_01.pt",
+        "s07_microwave_use_02.pt",
+        "s02_microwave_use_01_retake.pt"
+    ],
+    "mixer": [
+        "s06_mixer_grab_01.pt",
+        "s08_mixer_use_01.pt",
+        "s10_mixer_use_02.pt",
+        "s02_mixer_use_02.pt"
+    ],
+    "notebook": [
+        "s05_notebook_grab_01.pt",
+        "s10_notebook_use_01.pt",
+        "s04_notebook_use_02.pt",
+        "s01_notebook_use_02.pt"
+    ],
+    "phone": [
+        "s01_phone_grab_01.pt",
+        "s02_phone_use_01.pt",
+        "s04_phone_use_02.pt",
+        "s06_phone_use_01.pt"
+    ],
+    "scissors": [
+        "s06_scissors_grab_01.pt",
+        "s05_scissors_use_02.pt",
+        "s08_scissors_use_03.pt",
+        "s02_scissors_use_02.pt"
+    ],
+    "waffleiron": [
+        "s05_waffleiron_grab_01.pt",
+        "s06_waffleiron_use_02.pt",
+        "s10_waffleiron_use_02.pt",
+        "s02_waffleiron_use_01.pt"
+    ]
+}
