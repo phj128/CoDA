@@ -112,3 +112,11 @@ If you find this code useful for your research, please use the following BibTeX 
 }
 ```
 
+# Acknowledgement
+
+We thank the authors of
+[GVHMR](https://github.com/zju3dv/GVHMR),
+[HGHOI](https://github.com/zju3dv/hghoi),
+and [DNO](https://github.com/korrawe/Diffusion-Noise-Optimization)
+for their great works, without which our project/code would not be possible.
+
