@@ -209,42 +209,6 @@ class VisWholeBodyPose(pl.Callback):
             wis3d.add_mesh(obj_verts[i], obj_faces, name=f"obj_{text}")
             if pred_obj_verts is not None:
                 wis3d.add_mesh(pred_obj_verts[i], pred_obj_faces, name=f"pred-{prefix}-obj")
-        if "target_finger_traj" in outputs:
-            # prefix = "rope"
-            for i in range(outputs["target_finger_traj"][0].shape[0]):
-                wis3d.set_scene_id(i)
-                wis3d.add_point_cloud(outputs["target_finger_traj"][0][i], name=prefix + "target-finger-traj")
-                wis3d.add_point_cloud(outputs["target_wrist_traj"][0][i], name=prefix + "target-wrist-traj")
-                if "finger_traj_global" in outputs["gt_output"]:
-                    wis3d.add_point_cloud(outputs["gt_output"]["finger_traj_global"][0][i], name="gt-finger-traj")
-                    wis3d.add_point_cloud(outputs["gt_output"]["wrist_traj_global"][0][i], name="gt-wrist-traj")
-
-            # if "invtraj_outputs" in outputs:
-            #     basis_point = batch["basis_finger_point"][0]  # (M, 3)
-            #     obj_mat = batch["obj"][0]  # (L, 2, 4, 4)
-            #     scale = batch["scale"][0]  # (1,)
-            #     center = batch["center"][0]  # (3,)
-            #     global_obj_center_pos = matrix.get_position_from(center[None], obj_mat[..., 0, :, :])  # (L, 3)
-            #     global_obj_center_rotmat = matrix.get_rotation(obj_mat[..., 0, :, :])  # (L, 3, 3)
-            #     global_obj_center_mat = matrix.get_TRS(global_obj_center_rotmat, global_obj_center_pos)  # (L, 4, 4)
-
-            #     scaled_basis_point = basis_point * scale
-            #     global_basis_point = matrix.get_position_from(
-            #         scaled_basis_point[None], global_obj_center_mat
-            #     )  # (L, M, 3)
-            #     finger_dist = outputs["invtraj_outputs"]["finger_dist"][0]  # (L, M*J)
-            #     M = finger_dist.shape[-1] // 12
-            #     finger_dist = finger_dist.reshape(finger_dist.shape[0], M, 12)
-            #     scaled_finger_dist = finger_dist * scale  # (L, M, 12)
-
-            #     for i in range(global_basis_point.shape[0]):
-            #         wis3d.set_scene_id(i)
-            #         wis3d.add_point_cloud(global_basis_point[i], name="basis_point")
-            #         for j_i in range(12):
-            #             mask = finger_dist[i, :, j_i] < 0.2
-            #             wis3d.add_spheres(
-            #                 global_basis_point[i][mask], scaled_finger_dist[i, mask, j_i], name=f"finger_dist_{j_i}"
-            #             )
 
         self.wis_i += 1
         return

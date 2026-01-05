@@ -12,6 +12,7 @@ import coda.model.diff.utils.endecoder
 
 # Metric
 import coda.model.diff.callbacks.metric_arctic
+import coda.model.diff.callbacks.metric_grab
 
 # PL Callbacks
 import coda.utils.callbacks.simple_ckpt_saver

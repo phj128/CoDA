@@ -650,21 +650,6 @@ class WholeBodyPoseDataset(BaseDataset):
         self.unit_length = 4
         self.w_vectorizer = WordVectorizer("./inputs/checkpoints/glove", "our_vab")
 
-    def _load_dataset(self):
-        super()._load_dataset()
-        s_key = [
-            "s1_mug_toast_1.pt",
-            "s1_elephant_lift.pt",
-            "s1_mug_lift.pt",
-            "s1_train_play_1.pt",
-            "s1_apple_offhand_1.pt",
-            "s1_alarmclock_lift.pt",
-        ]
-        # self.motion_files = {k: self.motion_files[k] for k in s_key}
-        # s1_cylindermedium_pass_1.pt # right hand pass to right far
-        # self.motion_files = {k: self.motion_files[k] for k in self.motion_files.keys() if "pass" in k}
-        return
-
     def _process_data(self, data, idx):
         length = data["length"]
         beta = data["beta"]

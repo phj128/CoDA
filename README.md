@@ -17,9 +17,15 @@
 
 ## TODOs
 
-- [x] Release training code. 
+- [x] Release ARCTIC training code. 
 
-- [x] Release evaluation code. 
+- [x] Release ARCTIC evaluation code.
+
+- [x] Release GRAB training code.
+
+- [x] Release GRAB evaluation code.
+
+- [x] Release visualization code. 
 
 ## Dependencies
 To create the environment, follow the instructions:
@@ -44,7 +50,9 @@ Note that we do not intend to distribute the original datasets, and you need to 
 *We're unable to provide the original data due to the license restrictions.* 
 By downloading the preprocessed data, you agree to the original dataset's terms of use and use the data for research purposes only.
 
-6. Download our pretrained checkpoints from [OneDrive](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/u3011165_connect_hku_hk/EfQOTeVxkJFGusThZkxjNbMB4Y2PVBTwHVFEGsc9dLiC-Q?e=slnIB5) and evaluator from [OneDrive](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/u3011165_connect_hku_hk/EXw_bVquOWxDlLLmGkmw06YBsmariT-CFuvJf7MyEtZHOA?e=7wxuiU).
+6. Download our pretrained checkpoints (including shared models and ARCTIC-specific checkpoints) from [OneDrive](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/u3011165_connect_hku_hk/EfQOTeVxkJFGusThZkxjNbMB4Y2PVBTwHVFEGsc9dLiC-Q?e=slnIB5) and evaluator from [OneDrive](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/u3011165_connect_hku_hk/EXw_bVquOWxDlLLmGkmw06YBsmariT-CFuvJf7MyEtZHOA?e=7wxuiU).
+
+6a. For GRAB testing, additionally download checkpoints from [OneDrive](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/u3011165_connect_hku_hk/IQCsgdVX3tAPT4xQ9Ut8eEEvAbRV69ULcJpjB7DmTEl9vuw?e=exgdN7) and evaluator from [OneDrive](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/u3011165_connect_hku_hk/IQBzF1v11vfzQ6HsQxDPvHi1AbcYI9YlvYOxtsMPc_4lUC4?e=xuzb25). Place the GRAB checkpoints under `inputs/release_checkpoints/`.
 
 7. Rename these downloaded files and organize them following the file structure:
 
@@ -58,13 +66,14 @@ inputs
 │   ├── glove
 │   ├── huggingface
 │   │   └── clip-vit-base-patch32
-│   └── arcticobj
+│   ├── arcticobj
+│   └── grab_short  # Only for the GRAB testing
 ├── amass
 ├── arctic
 ├── arctic_neutral
 ├── grab_extracted
 ├── grab_neutral
-└── release_checkpoints
+└── release_checkpoints  # Place GRAB-specific checkpoints here (from step 6a)
 ```
 
 8. Calculate the corresponding bps representation.
@@ -74,21 +83,52 @@ python tools/preprocess/grab_bps.py
 ```
 
 ## Evaluation
-Test with our provided checkpoints.
+Test with our provided checkpoints on the ARCTIC dataset.
 ```
 python tools/train.py exp=wholebody/obj_arctic global/task=wholebody/test_arctic
 ```
 
-## Training
-1. Train the object trajectory model.
+
+Test with our provided checkpoints on the GRAB dataset.
 ```
-python tools/train.py exp=objtraj/arctic
+python tools/train.py exp=wholebody/obj_grab global/task=wholebody/test_grab
 ```
 
+## Visualization
+
+After testing, you can visualize the results using [Wis3D](https://github.com/zju3dv/Wis3D):
+
+```bash
+wis3d --vis_dir ./outputs/wis3d --host 0.0.0.0 --port 19090 
+```
+
+Then open `http://localhost:19090` in your browser to view the visualization results.
+
+## Training
+
+1. Train the object trajectory model.
+
+   For ARCTIC dataset:
+   ```
+   python tools/train.py exp=objtraj/arctic
+   ```
+
+   For GRAB dataset:
+   ```
+   python tools/train.py exp=objtraj/grab
+   ```
+
 2. Train the end-effector trajectory model.
-```
-python tools/train.py exp=ee/arctic
-```
+
+   For ARCTIC dataset:
+   ```
+   python tools/train.py exp=ee/arctic
+   ```
+
+   For GRAB dataset:
+   ```
+   python tools/train.py exp=ee/grab
+   ```
 
 3. Train separate motion diffusion models.
 ```

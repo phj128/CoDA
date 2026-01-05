@@ -1,0 +1,195 @@
+# @package _global_
+defaults:
+    - override /data: mocap/trainX_testY
+    - override /model: diffusion/diffusion_pl
+    - override /endecoder: diffusion/v1_bodypose_hml3darcticgrab_angley
+    - override /optimizer: adamw_1e-4
+    - override /scheduler_cfg: epoch_half_200_350
+    - override /train_datasets:
+          - grab/wholebody
+    - override /test_datasets:
+          - grab/wholebody_test
+    - override /callbacks:
+          - simple_ckpt_saver/every50e_top100
+          - prog_bar/prog_reporter_every0.1
+          - train_speed_timer/base
+          - lr_monitor/pl
+          - metric_hml3d
+    - override /network: diffusion/bodypose_angley_transformer
+    - override /network1: diffusion/handpose_transformer
+    - override /network2: diffusion/handpose_transformer
+    - override /network3: diffusion/bpstraj_transformer
+
+    - override /endecoder1: diffusion/v1_left_handpose_arcticgrab
+    - override /endecoder2: diffusion/v1_right_handpose_arcticgrab
+    - override /endecoder3: diffusion/v1_bps_tip
+
+
+exp_name_base: diffusion
+exp_name_var: "wholebody"
+exp_name: ${exp_name_base}${exp_name_var}
+data_name: grab
+
+pipeline:
+    _target_: hmr4d.model.diff.pipeline.wholebodypartobj_pipeline.Pipeline
+
+    args_traj_optimization:
+        num_opt_steps: 1
+        lr: 0.05
+        lr_warm_up_steps: 50
+        lr_decay_steps: 800
+
+    args_diffusion_optimization:
+        num_opt_steps: 1
+        lr: 0.05
+        perturb_scale: 0.0
+        diff_penalty_scale: 0.0
+        lr_warm_up_steps: 50
+        lr_decay_steps: 800
+        decorrelate_scale: 1
+        only_body_steps: 300
+        no_body_steps: 800
+        no_pene_steps: 500
+        
+        body_w: 1.0 
+        detach_hand_w: 0.5 
+        hand_w: 1.0
+        delta_w: 1.0 
+        sdf_w: 5.0 
+        root_height_reg_w: 0.2
+        foot_sliding_reg_w: 0.1
+        foot_floating_reg_w: 1.0
+
+        num_ddim_steps: 10
+
+    args_denoiser3d:
+        _target_: coda.network.transformer.rope_transformer.NetworkEncoderRoPE
+        max_len: 300
+        output_dim: 140
+        objtraj_dim: 0
+        beta_dim: 0
+        clip_dim: 0
+        skeleton_dim: 0
+
+    args_denoiser3d_lefthand:
+        _target_: coda.network.transformer.rope_transformer.NetworkEncoderRoPE
+        max_len: 300
+        output_dim: 90
+        objtraj_dim: 0
+        beta_dim: 0
+        skeleton_dim: 0
+        clip_dim: 0
+    args_denoiser3d_righthand:
+        _target_: coda.network.transformer.rope_transformer.NetworkEncoderRoPE
+        max_len: 300
+        output_dim: 90
+        objtraj_dim: 0
+        beta_dim: 0
+        skeleton_dim: 0
+        clip_dim: 0
+
+    args_denoiser3d_invtraj:
+        _target_: coda.network.transformer.trajropeabst_transformer.NetworkEncoderRoPE
+        max_len: 300
+        output_dim: 3092
+        bps_dim: 256
+        objtraj_dim: 10
+        beta_dim: 0
+        num_layers: 6
+        is_dit: True
+        clip_dim: 512
+        contact_mask_dim: 1
+        is_everylayer_posemb: True
+
+    args_denoiser3d_obj:
+        _target_: coda.network.transformer.transformer.NetworkEncoder
+        max_len: 300
+        output_dim: 10
+        obj_dim: 1
+        bps_dim: 256
+        objtraj_dim: 0
+        clip_dim: 512
+        num_layers: 6
+        is_dit: True
+        first_x_dim: 10
+
+
+    args:
+        endecoder_opt:
+            _target_: coda.model.diff.utils.endecoder.BodyPoseEnDecoder
+            is_angleay: True
+            stats_name: BODYPOSE_AMASS_ANGLEY
+
+        lefthand_endecoder_opt:
+            _target_: coda.model.diff.utils.endecoder.HandPoseEnDecoder
+            stats_name: LEFTHANDPOSE_ARCTIC_GRAB
+            is_nobeta: True 
+        righthand_endecoder_opt: 
+            _target_: coda.model.diff.utils.endecoder.HandPoseEnDecoder
+            stats_name: RIGHTHANDPOSE_ARCTIC_GRAB
+            is_nobeta: True 
+        invtraj_endecoder_opt: 
+            _target_: coda.model.diff.utils.endecoder.GRABBPSTrajEnDecoder
+            stats_name: BPSTIPROPETRAJPOS_GRAB
+            is_zerorot: False
+            is_nobeta: True
+            is_trajrope: True
+            is_in_world: True
+        obj_endecoder_opt:
+            _target_: coda.model.diff.utils.endecoder.GRABTrajEnDecoder
+            stats_name: OBJTRAJ_GRAB
+
+        guidance_scale: 1.0
+        num_inference_steps: 100
+        scheduler_opt_train: # Always DDPM
+            beta_schedule: squaredcos_cap_v2 # cosine instead of linear
+            prediction_type: sample
+            clip_sample: False
+            timestep_spacing: "linspace"
+            num_train_timesteps: 1000
+        scheduler_opt_sample:
+            _target_: diffusers.schedulers.DDIMScheduler 
+            beta_schedule: squaredcos_cap_v2 # cosine instead of linear
+            prediction_type: sample
+            clip_sample: False
+            timestep_spacing: "linspace"
+            num_train_timesteps: 1000
+            set_alpha_to_one: True
+        scheduler_opt_inverse:
+            _target_: diffusers.schedulers.DDIMInverseScheduler 
+            beta_schedule: squaredcos_cap_v2 # cosine instead of linear
+            prediction_type: sample
+            clip_sample: False
+            timestep_spacing: "leading"
+            num_train_timesteps: 1000
+            steps_offset: 1
+            set_alpha_to_one: False
+    args_clip:
+        _target_: hmr4d.network.clip.clip_text_vision_base_patch32.CLIPLatentEncoder
+
+data:
+    loader_opts:
+        train:
+            batch_size: 64
+            num_workers: 4
+        val: # during training use this to evaluate
+            batch_size: 1
+            num_workers: 4
+        test:
+            batch_size: 1
+            num_workers: 0
+
+pl_trainer:
+    # precision: 16-mixed
+    precision: 32
+    log_every_n_steps: 50
+    gradient_clip_val: 0.5
+    max_epochs: 2000
+    check_val_every_n_epoch: 50
+    devices: 1
+
+logger:
+    _target_: pytorch_lightning.loggers.WandbLogger
+    save_dir: ${output_dir} # /save_dir/name/version/sub_dir
+    name: ${exp_name_base}${exp_name_var}
+    project: diffusion_wholebody
