@@ -13,7 +13,8 @@
 </p>
 
 ## News
-[October 13, 2025] Training and Evaluation code released. 
+[October 13, 2025] ARCTIC training and evaluation code released.  
+[January 5, 2026] GRAB training, evaluation, and visualization code released. 
 
 ## TODOs
 
