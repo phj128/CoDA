@@ -31,16 +31,16 @@ exp_name: ${exp_name_base}${exp_name_var}
 data_name: grab
 
 pipeline:
-    _target_: hmr4d.model.diff.pipeline.wholebodypartobj_pipeline.Pipeline
+    _target_: coda.model.diff.pipeline.wholebodypartobj_pipeline.Pipeline
 
     args_traj_optimization:
-        num_opt_steps: 1
+        num_opt_steps: 800
         lr: 0.05
         lr_warm_up_steps: 50
         lr_decay_steps: 800
 
     args_diffusion_optimization:
-        num_opt_steps: 1
+        num_opt_steps: 800
         lr: 0.05
         perturb_scale: 0.0
         diff_penalty_scale: 0.0
@@ -165,7 +165,7 @@ pipeline:
             steps_offset: 1
             set_alpha_to_one: False
     args_clip:
-        _target_: hmr4d.network.clip.clip_text_vision_base_patch32.CLIPLatentEncoder
+        _target_: coda.network.clip.clip_text_vision_base_patch32.CLIPLatentEncoder
 
 data:
     loader_opts:
